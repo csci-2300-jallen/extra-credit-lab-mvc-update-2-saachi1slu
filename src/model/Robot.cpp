@@ -2,47 +2,89 @@
 
 #include <fstream>
 
-Robot::Robot(const std::string& name)
+Robot::Robot(const std::string &name)
     : name_(name) {}
 
-std::string Robot::getName() const {
+std::string Robot::getName() const
+{
     return name_;
 }
 
-int Robot::getX() const {
+int Robot::getX() const
+{
     return x;
 }
 
-int Robot::getY() const {
+int Robot::getY() const
+{
     return y;
 }
 
-int Robot::getCurrentHistoryIndex() const {
+int Robot::getCurrentHistoryIndex() const
+{
     return currentHistoryIndex;
 }
 
-const std::vector<Point2D>& Robot::getHistory() const {
+const std::vector<Point2D> &Robot::getHistory() const
+{
     return history;
 }
 
-void Robot::moveUp() {
-    moveTo(x, y - 1);
+void Robot::moveUp()
+{
+    moveCount++;
+
+    if (moveCount > 10)
+    {
+        moveTo(x, y - 2);
+    }
+    else
+        moveTo(x, y - 1);
 }
 
-void Robot::moveDown() {
-    moveTo(x, y + 1);
+void Robot::moveDown()
+{
+    moveCount++;
+    if (moveCount > 10)
+    {
+        moveTo(x, y + 2);
+    }
+    else
+    {
+        moveTo(x, y + 1);
+    }
 }
 
-void Robot::moveLeft() {
-    moveTo(x - 1, y);
+void Robot::moveLeft()
+{
+    moveCount++;
+    if (moveCount > 10)
+    {
+        moveTo(x - 2, y);
+    }
+    else
+    {
+        moveTo(x - 1, y);
+    }
 }
 
-void Robot::moveRight() {
-    moveTo(x + 1, y);
+void Robot::moveRight()
+{
+    moveCount++;
+    if (moveCount > 10)
+    {
+        moveTo(x + 2, y);
+    }
+    else
+    {
+        moveTo(x + 1, y);
+    }
 }
 
-void Robot::undo() {
-    if (!canUndo()) {
+void Robot::undo()
+{
+    if (!canUndo())
+    {
         return;
     }
 
@@ -51,8 +93,10 @@ void Robot::undo() {
     y = history[currentHistoryIndex].y;
 }
 
-void Robot::redo() {
-    if (!canRedo()) {
+void Robot::redo()
+{
+    if (!canRedo())
+    {
         return;
     }
 
@@ -61,26 +105,31 @@ void Robot::redo() {
     y = history[currentHistoryIndex].y;
 }
 
-bool Robot::canUndo() const {
+bool Robot::canUndo() const
+{
     return currentHistoryIndex > 0;
 }
 
-bool Robot::canRedo() const {
+bool Robot::canRedo() const
+{
     return currentHistoryIndex < static_cast<int>(history.size()) - 1;
 }
 
-void Robot::saveToFile(const std::string& filePath) const {
+void Robot::saveToFile(const std::string &filePath) const
+{
     std::ofstream file(filePath);
 
     file << name_ << '\n';
     file << currentHistoryIndex << '\n';
 
-    for (const Point2D& point : history) {
+    for (const Point2D &point : history)
+    {
         file << point.x << ' ' << point.y << '\n';
     }
 }
 
-void Robot::loadFromFile(const std::string& filePath) {
+void Robot::loadFromFile(const std::string &filePath)
+{
     std::ifstream file(filePath);
 
     std::string loadedName;
@@ -91,7 +140,8 @@ void Robot::loadFromFile(const std::string& filePath) {
     int pointX = 0;
     int pointY = 0;
     std::vector<Point2D> loadedHistory;
-    for (int index = 0; index <= loadedIndex; index++) {
+    for (int index = 0; index <= loadedIndex; index++)
+    {
         file >> pointX >> pointY;
         loadedHistory.push_back({pointX, pointY});
         x = pointX;
@@ -103,12 +153,15 @@ void Robot::loadFromFile(const std::string& filePath) {
     currentHistoryIndex = loadedIndex;
 }
 
-void Robot::moveTo(int newX, int newY) {
-    if (newX < 0 || newX >= gridSize || newY < 0 || newY >= gridSize) {
+void Robot::moveTo(int newX, int newY)
+{
+    if (newX < 0 || newX >= gridSize || newY < 0 || newY >= gridSize)
+    {
         return;
     }
 
-    if (newX == x && newY == y) {
+    if (newX == x && newY == y)
+    {
         return;
     }
 
@@ -117,8 +170,10 @@ void Robot::moveTo(int newX, int newY) {
     recordPosition();
 }
 
-void Robot::recordPosition() {
-    if (canRedo()) {
+void Robot::recordPosition()
+{
+    if (canRedo())
+    {
         history.erase(history.begin() + currentHistoryIndex + 1, history.end());
     }
 

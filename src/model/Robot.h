@@ -19,6 +19,7 @@ public:
     void moveDown();
     void moveLeft();
     void moveRight();
+    int moveCount = 0;
     void undo();
     void redo();
 
